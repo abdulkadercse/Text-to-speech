@@ -1,0 +1,56 @@
+public class MainActivity extends AppCompatActivity {
+
+    TextView textView;
+    Button button;
+
+    TextToSpeech texttospeech;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        textView = findViewById(R.id.textView);
+        button = findViewById(R.id.button);
+
+        texttospeech = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if(status==texttospeech.SUCCESS){
+
+                  int result = texttospeech.setLanguage(Locale.ENGLISH);
+                  if (result==texttospeech.LANG_NOT_SUPPORTED ||result==texttospeech.LANG_MISSING_DATA){
+
+                      Toast.makeText(MainActivity.this, "Language not supported", Toast.LENGTH_SHORT).show();
+                  }else {
+
+                      Toast.makeText(MainActivity.this, "Language supported", Toast.LENGTH_SHORT).show();
+                  }
+                }else {
+
+                    Toast.makeText(MainActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String text = textView.getText().toString();
+                texttospeech.speak(text,TextToSpeech.QUEUE_FLUSH,null);
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        if(texttospeech!=null){
+            texttospeech.stop();
+            texttospeech.shutdown();
+
+        }
+        super.onDestroy();
+    }
+}
